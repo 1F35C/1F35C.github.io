@@ -1,0 +1,66 @@
+<h2 id="why">Why?</h2>
+<p>GitHub Pages is an easy way to get a static website on the web.</p>
+
+<p><code class="language-plaintext highlighter-rouge">create-react-app</code> is an easy way to create a single-page React app.</p>
+
+<p>Why not combine them to create the easiest React app of our lives?</p>
+
+<h2 id="step-1-react-app-git-repository">Step 1: React App Git Repository</h2>
+<p>First we can scaffold a React app using this one liner.</p>
+
+<figure class="highlight"><pre><code class="language-bash" data-lang="bash">npx create-react-app <span class="nt">--template</span> typescript<span class="p">;</span></code></pre></figure>
+
+<p>Template argument is optional. Call me old-fashioned, but I love my language statically typed.</p>
+
+<p><code class="language-plaintext highlighter-rouge">create-react-app</code> will automatically create a repository for us as well. (Hurray for automation!)</p>
+
+<p>All we have to do now is push what we have to GitHub server:</p>
+
+<figure class="highlight"><pre><code class="language-bash" data-lang="bash">git remote add origin &lt;repository.git URL&gt;<span class="p">;</span>
+git push <span class="nt">-u</span> origin main<span class="p">;</span></code></pre></figure>
+
+<h2 id="step-2-github-configuration">Step 2: GitHub Configuration</h2>
+<p>Now we can change GitHub repository settings to use GitHub pages.
+I wanted the static files to be in a specific directory, so I will be putting my static files for GitHub Pages in /docs.</p>
+
+<p>In Settings &gt; Pages under Source:
+  Branch: main
+  Folder: /docs</p>
+
+<p>Not the directory name I would have chosen, but GitHub doesn’t give you too many options.</p>
+
+<h2 id="step-3-tweak-packagejson">Step 3: Tweak package.json</h2>
+<p>You can do a production build of your React app by running <code class="language-plaintext highlighter-rouge">npm run build</code>.
+You’ll notice that <code class="language-plaintext highlighter-rouge">react-script</code> will put the files in <code class="language-plaintext highlighter-rouge">build</code> directory, not in <code class="language-plaintext highlighter-rouge">docs</code>, which is not what we promised GitHub.</p>
+
+<p>This can be changed by editing <code class="language-plaintext highlighter-rouge">package.json</code>.
+Find where the <code class="language-plaintext highlighter-rouge">build</code> script is defined, and add <code class="language-plaintext highlighter-rouge">BUILD_PATH=docs</code> environment variable at the beginning of the command:</p>
+
+<figure class="highlight"><pre><code class="language-bash" data-lang="bash">...
+<span class="s2">"scripts"</span>: <span class="o">{</span>
+  ...
+  <span class="s2">"build"</span>: <span class="s2">"BUILD_PATH=docs react-scripts build"</span>,
+  ...
+<span class="o">}</span>,
+...</code></pre></figure>
+
+<p>Another thing you will notice is that all the links to generated files are broken in index.html.</p>
+
+<p>This is because <code class="language-plaintext highlighter-rouge">create-react-app</code> expects the base URL to be the root domain URL.
+However, the way GitHub Pages works for repositories, your base URL will actually be in <code class="language-plaintext highlighter-rouge">/&lt;repository name&gt;/</code>.</p>
+
+<p>For example, index.html will look for the stylesheet at <code class="language-plaintext highlighter-rouge">/static/css/main.a617e044.chunk.css</code> when it is actually at <code class="language-plaintext highlighter-rouge">&lt;github username&gt;.github.io/&lt;repository name&gt;/static/css/main.a617e044.chunk.css</code>.</p>
+
+<p>Thankfully the base URL can be changed easily with the PUBLIC_URL environment variable.
+We will modify the same line we modified earlier (replace <repository name=""> with your actual repository name):</repository></p>
+
+<figure class="highlight"><pre><code class="language-bash" data-lang="bash">...
+<span class="s2">"scripts"</span>: <span class="o">{</span>
+  ...
+  <span class="s2">"build"</span>: <span class="s2">"BUILD_PATH=docs PUBLIC_URL=&lt;repository name&gt; react-scripts build"</span>,
+  ...
+<span class="o">}</span>,
+...</code></pre></figure>
+
+<p>Now</p>
+
